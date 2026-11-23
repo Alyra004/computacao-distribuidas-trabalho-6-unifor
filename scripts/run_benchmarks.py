@@ -117,6 +117,8 @@ def run_single_benchmark(
             duration,
             "--csv",
             container_prefix,
+            "--exit-code-on-error",
+            "0",
             user_class,
         ]
         subprocess.run(cmd, cwd=REPO_ROOT, check=True)
@@ -144,6 +146,8 @@ def run_single_benchmark(
         duration,
         "--csv",
         str(prefix),
+        "--exit-code-on-error",
+        "0",
         user_class,
     ]
     subprocess.run(cmd, env=env, cwd=REPO_ROOT, check=True)

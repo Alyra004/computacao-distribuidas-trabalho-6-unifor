@@ -1,0 +1,1838 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-11-23T22:15:00.000Z",
+  "__export_source": "trabalho-6-unifor",
+  "resources": [
+    {
+      "_id": "wrk_t6_streaming",
+      "parentId": null,
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "Trabalho 6 - Streaming de Músicas (UNIFOR)",
+      "description": "Coleção multi-protocolo (REST, SOAP, GraphQL e gRPC) para Python e Java.",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_base",
+      "parentId": "wrk_t6_streaming",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "Base Environment",
+      "data": {
+        "rest_url": "http://localhost:8001",
+        "soap_url": "http://localhost:8002",
+        "graphql_url": "http://localhost:8003",
+        "grpc_url": "localhost:50051",
+        "usuario_id": "u1",
+        "playlist_id": "p1",
+        "musica_id": "m1",
+        "demo_usuario_id": "u99",
+        "demo_musica_id": "m99",
+        "demo_playlist_id": "p99"
+      },
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1795461300000,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_python",
+      "parentId": "env_base",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "Python (8001-8003 / 50051)",
+      "data": {
+        "rest_url": "http://localhost:8001",
+        "soap_url": "http://localhost:8002",
+        "graphql_url": "http://localhost:8003",
+        "grpc_url": "localhost:50051"
+      },
+      "dataPropertyOrder": null,
+      "color": "#3776ab",
+      "isPrivate": false,
+      "metaSortKey": 1795461300001,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_java",
+      "parentId": "env_base",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "Java (8081-8083 / 50052)",
+      "data": {
+        "rest_url": "http://localhost:8081",
+        "soap_url": "http://localhost:8082",
+        "graphql_url": "http://localhost:8083",
+        "grpc_url": "localhost:50052"
+      },
+      "dataPropertyOrder": null,
+      "color": "#e76f00",
+      "isPrivate": false,
+      "metaSortKey": 1795461300002,
+      "_type": "environment"
+    },
+    {
+      "_id": "pf_streaming",
+      "parentId": "wrk_t6_streaming",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "streaming.proto",
+      "protoText": "syntax = \"proto3\";\n\npackage streaming;\n\noption java_multiple_files = true;\noption java_package = \"br.unifor.distribuidos.grpc.proto\";\noption java_outer_classname = \"StreamingProto\";\n\n// =============================================================================\n// Entidades do Domínio (Slide 5)\n// =============================================================================\n\nmessage Usuario {\n  string id = 1;\n  string nome = 2;\n  int32 idade = 3;\n}\n\nmessage Musica {\n  string id = 1;\n  string nome = 2;\n  string artista = 3;\n}\n\nmessage Playlist {\n  string id = 1;\n  string nome = 2;\n  string usuario_id = 3;\n  repeated string musica_ids = 4;\n}\n\n// =============================================================================\n// Mensagens Auxiliares\n// =============================================================================\n\nmessage Empty {}\n\nmessage IdRequest {\n  string id = 1;\n}\n\nmessage StatusResponse {\n  bool sucesso = 1;\n  string mensagem = 2;\n}\n\n// Usuários\nmessage CriarUsuarioRequest {\n  string nome = 1;\n  int32 idade = 2;\n  string id = 3;\n}\n\nmessage AtualizarUsuarioRequest {\n  string id = 1;\n  string nome = 2;\n  int32 idade = 3;\n}\n\nmessage UsuarioListResponse {\n  repeated Usuario usuarios = 1;\n}\n\n// Músicas\nmessage CriarMusicaRequest {\n  string nome = 1;\n  string artista = 2;\n  string id = 3;\n}\n\nmessage AtualizarMusicaRequest {\n  string id = 1;\n  string nome = 2;\n  string artista = 3;\n}\n\nmessage MusicaListResponse {\n  repeated Musica musicas = 1;\n}\n\n// Playlists\nmessage CriarPlaylistRequest {\n  string nome = 1;\n  string usuario_id = 2;\n  repeated string musica_ids = 3;\n  string id = 4;\n}\n\nmessage AtualizarPlaylistRequest {\n  string id = 1;\n  string nome = 2;\n  string usuario_id = 3;\n  repeated string musica_ids = 4;\n}\n\nmessage PlaylistMusicaRequest {\n  string playlist_id = 1;\n  string musica_id = 2;\n}\n\nmessage PlaylistListResponse {\n  repeated Playlist playlists = 1;\n}\n\n// =============================================================================\n// Serviço gRPC (CRUD + 5 Consultas Obrigatórias do Slide 6)\n// =============================================================================\n\nservice StreamingService {\n  // Saúde e Reset\n  rpc HealthCheck(Empty) returns (StatusResponse);\n  rpc ResetSeed(Empty) returns (StatusResponse);\n\n  // Usuários (CRUD + Listar todos)\n  rpc ListarUsuarios(Empty) returns (UsuarioListResponse);\n  rpc ObterUsuario(IdRequest) returns (Usuario);\n  rpc CriarUsuario(CriarUsuarioRequest) returns (Usuario);\n  rpc AtualizarUsuario(AtualizarUsuarioRequest) returns (Usuario);\n  rpc RemoverUsuario(IdRequest) returns (StatusResponse);\n\n  // Músicas (CRUD + Listar todas)\n  rpc ListarMusicas(Empty) returns (MusicaListResponse);\n  rpc ObterMusica(IdRequest) returns (Musica);\n  rpc CriarMusica(CriarMusicaRequest) returns (Musica);\n  rpc AtualizarMusica(AtualizarMusicaRequest) returns (Musica);\n  rpc RemoverMusica(IdRequest) returns (StatusResponse);\n\n  // Playlists (CRUD + Associação)\n  rpc ListarPlaylists(Empty) returns (PlaylistListResponse);\n  rpc ObterPlaylist(IdRequest) returns (Playlist);\n  rpc CriarPlaylist(CriarPlaylistRequest) returns (Playlist);\n  rpc AtualizarPlaylist(AtualizarPlaylistRequest) returns (Playlist);\n  rpc RemoverPlaylist(IdRequest) returns (StatusResponse);\n  rpc AdicionarMusicaNaPlaylist(PlaylistMusicaRequest) returns (Playlist);\n  rpc RemoverMusicaDaPlaylist(PlaylistMusicaRequest) returns (Playlist);\n\n  // Consultas Relacionais Obrigatórias (Slide 6)\n  rpc ListarPlaylistsPorUsuario(IdRequest) returns (PlaylistListResponse);\n  rpc ListarMusicasPorPlaylist(IdRequest) returns (MusicaListResponse);\n  rpc ListarPlaylistsPorMusica(IdRequest) returns (PlaylistListResponse);\n}\n",
+      "_type": "proto_file"
+    },
+    {
+      "_id": "fld_rest",
+      "parentId": "wrk_t6_streaming",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "1. REST",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1795461299000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_soap",
+      "parentId": "wrk_t6_streaming",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "2. SOAP",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1795461298000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_graphql",
+      "parentId": "wrk_t6_streaming",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "3. GraphQL",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1795461297000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_grpc",
+      "parentId": "wrk_t6_streaming",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "name": "4. gRPC",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1795461296000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_rest_health",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/health",
+      "name": "0. Health Check",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461295000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_q1",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/usuarios",
+      "name": "1. [Slide 6] Listar Usuários",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461294000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_q2",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/musicas",
+      "name": "2. [Slide 6] Listar Músicas",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461293000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_q3",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/usuarios/{{ _.usuario_id }}/playlists",
+      "name": "3. [Slide 6] Playlists do Usuário",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461292000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_q4",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/playlists/{{ _.playlist_id }}/musicas",
+      "name": "4. [Slide 6] Músicas da Playlist",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461291000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_q5",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/musicas/{{ _.musica_id }}/playlists",
+      "name": "5. [Slide 6] Playlists por Música",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461290000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_u_create",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/usuarios",
+      "name": "CRUD Usuário - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": \"{{ _.demo_usuario_id }}\",\n  \"nome\": \"Aluno Demo\",\n  \"idade\": 22\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461289000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_u_get",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/usuarios/{{ _.demo_usuario_id }}",
+      "name": "CRUD Usuário - Obter",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461288000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_u_update",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/usuarios/{{ _.demo_usuario_id }}",
+      "name": "CRUD Usuário - Atualizar",
+      "description": "",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Aluno Demo Editado\",\n  \"idade\": 23\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461287000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_u_delete",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/usuarios/{{ _.demo_usuario_id }}",
+      "name": "CRUD Usuário - Remover",
+      "description": "",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461286000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_m_create",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/musicas",
+      "name": "CRUD Música - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": \"{{ _.demo_musica_id }}\",\n  \"nome\": \"Música Demo\",\n  \"artista\": \"Artista Demo\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461285000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_m_update",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/musicas/{{ _.demo_musica_id }}",
+      "name": "CRUD Música - Atualizar",
+      "description": "",
+      "method": "PUT",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"nome\": \"Música Demo Editada\",\n  \"artista\": \"Artista Demo\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461284000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_m_delete",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/musicas/{{ _.demo_musica_id }}",
+      "name": "CRUD Música - Remover",
+      "description": "",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461283000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_p_create",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/playlists",
+      "name": "CRUD Playlist - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"id\": \"{{ _.demo_playlist_id }}\",\n  \"nome\": \"Playlist Demo\",\n  \"usuarioId\": \"{{ _.usuario_id }}\",\n  \"musicaIds\": [\n    \"m1\"\n  ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461282000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_p_add_song",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/playlists/{{ _.demo_playlist_id }}/musicas/m2",
+      "name": "CRUD Playlist - Adicionar Música",
+      "description": "",
+      "method": "POST",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461281000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_p_rem_song",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/playlists/{{ _.demo_playlist_id }}/musicas/m2",
+      "name": "CRUD Playlist - Remover Música",
+      "description": "",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461280000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_rest_p_delete",
+      "parentId": "fld_rest",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.rest_url }}/playlists/{{ _.demo_playlist_id }}",
+      "name": "CRUD Playlist - Remover",
+      "description": "",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461279000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_wsdl",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap?wsdl",
+      "name": "0. Obter WSDL",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1795461278000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_q1",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "1. [Slide 6] Listar Usuários",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:ListarUsuariosRequest/>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461277000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_q2",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "2. [Slide 6] Listar Músicas",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:ListarMusicasRequest/>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461276000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_q3",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "3. [Slide 6] Playlists do Usuário",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:ListarPlaylistsPorUsuarioRequest><tns:usuarioId>{{ _.usuario_id }}</tns:usuarioId></tns:ListarPlaylistsPorUsuarioRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461275000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_q4",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "4. [Slide 6] Músicas da Playlist",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:ListarMusicasPorPlaylistRequest><tns:playlistId>{{ _.playlist_id }}</tns:playlistId></tns:ListarMusicasPorPlaylistRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461274000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_q5",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "5. [Slide 6] Playlists por Música",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:ListarPlaylistsPorMusicaRequest><tns:musicaId>{{ _.musica_id }}</tns:musicaId></tns:ListarPlaylistsPorMusicaRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461273000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_u_create",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Usuário - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:CriarUsuarioRequest><tns:id>{{ _.demo_usuario_id }}</tns:id><tns:nome>Aluno Demo</tns:nome><tns:idade>22</tns:idade></tns:CriarUsuarioRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461272000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_u_get",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Usuário - Obter",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:ObterUsuarioRequest><tns:id>{{ _.demo_usuario_id }}</tns:id></tns:ObterUsuarioRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461271000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_u_update",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Usuário - Atualizar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:AtualizarUsuarioRequest><tns:id>{{ _.demo_usuario_id }}</tns:id><tns:nome>Aluno Demo Editado</tns:nome><tns:idade>23</tns:idade></tns:AtualizarUsuarioRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461270000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_u_delete",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Usuário - Remover",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:RemoverUsuarioRequest><tns:id>{{ _.demo_usuario_id }}</tns:id></tns:RemoverUsuarioRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461269000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_m_create",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Música - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:CriarMusicaRequest><tns:id>{{ _.demo_musica_id }}</tns:id><tns:nome>Música Demo</tns:nome><tns:artista>Artista Demo</tns:artista></tns:CriarMusicaRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461268000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_m_delete",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Música - Remover",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:RemoverMusicaRequest><tns:id>{{ _.demo_musica_id }}</tns:id></tns:RemoverMusicaRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461267000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_p_create",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Playlist - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:CriarPlaylistRequest><tns:id>{{ _.demo_playlist_id }}</tns:id><tns:nome>Playlist Demo</tns:nome><tns:usuarioId>{{ _.usuario_id }}</tns:usuarioId><tns:musicaIds>m1</tns:musicaIds></tns:CriarPlaylistRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461266000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_p_add_song",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Playlist - Adicionar Música",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:AdicionarMusicaNaPlaylistRequest><tns:playlistId>{{ _.demo_playlist_id }}</tns:playlistId><tns:musicaId>m2</tns:musicaId></tns:AdicionarMusicaNaPlaylistRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461265000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_p_rem_song",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Playlist - Remover Música",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:RemoverMusicaDaPlaylistRequest><tns:playlistId>{{ _.demo_playlist_id }}</tns:playlistId><tns:musicaId>m2</tns:musicaId></tns:RemoverMusicaDaPlaylistRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461264000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_soap_p_delete",
+      "parentId": "fld_soap",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.soap_url }}/soap",
+      "name": "CRUD Playlist - Remover",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "text/xml",
+        "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"\n                  xmlns:tns=\"http://unifor.br/distribuidos/streaming\">\n  <soapenv:Body>\n    <tns:RemoverPlaylistRequest><tns:id>{{ _.demo_playlist_id }}</tns:id></tns:RemoverPlaylistRequest>\n  </soapenv:Body>\n</soapenv:Envelope>"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "text/xml; charset=utf-8"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461263000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_health",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "0. Health Check",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"{ health { sucesso mensagem } }\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461262000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_q1",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "1. [Slide 6] Listar Usuários",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"{ usuarios { id nome idade } }\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461261000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_q2",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "2. [Slide 6] Listar Músicas",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"{ musicas { id nome artista } }\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461260000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_q3",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "3. [Slide 6] Playlists do Usuário",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"query($id: ID!) { playlistsPorUsuario(usuarioId: $id) { id nome usuarioId } }\",\n  \"variables\": {\n    \"id\": \"{{ _.usuario_id }}\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461259000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_q4",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "4. [Slide 6] Músicas da Playlist",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"query($id: ID!) { musicasPorPlaylist(playlistId: $id) { id nome artista } }\",\n  \"variables\": {\n    \"id\": \"{{ _.playlist_id }}\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461258000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_q5",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "5. [Slide 6] Playlists por Música",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"query($id: ID!) { playlistsPorMusica(musicaId: $id) { id nome usuario { nome } } }\",\n  \"variables\": {\n    \"id\": \"{{ _.musica_id }}\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461257000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_nested",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "6. Consulta Aninhada (Usuário + Playlists + Músicas)",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"query($id: ID!) { usuario(id: $id) { id nome playlists { id nome musicas { id nome artista } } } }\",\n  \"variables\": {\n    \"id\": \"{{ _.usuario_id }}\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461256000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_u_create",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Usuário - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($id: ID, $nome: String!, $idade: Int!) { criarUsuario(id: $id, nome: $nome, idade: $idade) { id nome idade } }\",\n  \"variables\": {\n    \"id\": \"{{ _.demo_usuario_id }}\",\n    \"nome\": \"Aluno Demo\",\n    \"idade\": 22\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461255000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_u_update",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Usuário - Atualizar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($id: ID!, $nome: String!, $idade: Int!) { atualizarUsuario(id: $id, nome: $nome, idade: $idade) { id nome idade } }\",\n  \"variables\": {\n    \"id\": \"{{ _.demo_usuario_id }}\",\n    \"nome\": \"Aluno Demo Editado\",\n    \"idade\": 23\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461254000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_u_delete",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Usuário - Remover",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($id: ID!) { removerUsuario(id: $id) }\",\n  \"variables\": {\n    \"id\": \"{{ _.demo_usuario_id }}\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461253000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_m_create",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Música - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($id: ID, $nome: String!, $artista: String!) { criarMusica(id: $id, nome: $nome, artista: $artista) { id nome artista } }\",\n  \"variables\": {\n    \"id\": \"{{ _.demo_musica_id }}\",\n    \"nome\": \"Música Demo\",\n    \"artista\": \"Artista Demo\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461252000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_m_delete",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Música - Remover",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($id: ID!) { removerMusica(id: $id) }\",\n  \"variables\": {\n    \"id\": \"{{ _.demo_musica_id }}\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461251000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_p_create",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Playlist - Criar",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($id: ID, $nome: String!, $usuarioId: ID!, $musicaIds: [ID!]) { criarPlaylist(id: $id, nome: $nome, usuarioId: $usuarioId, musicaIds: $musicaIds) { id nome usuarioId musicaIds } }\",\n  \"variables\": {\n    \"id\": \"{{ _.demo_playlist_id }}\",\n    \"nome\": \"Playlist Demo\",\n    \"usuarioId\": \"{{ _.usuario_id }}\",\n    \"musicaIds\": [\n      \"m1\"\n    ]\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461250000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_p_add_song",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Playlist - Adicionar Música",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($playlistId: ID!, $musicaId: ID!) { adicionarMusicaNaPlaylist(playlistId: $playlistId, musicaId: $musicaId) { id musicaIds } }\",\n  \"variables\": {\n    \"playlistId\": \"{{ _.demo_playlist_id }}\",\n    \"musicaId\": \"m2\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461249000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_p_rem_song",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Playlist - Remover Música",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($playlistId: ID!, $musicaId: ID!) { removerMusicaDaPlaylist(playlistId: $playlistId, musicaId: $musicaId) { id musicaIds } }\",\n  \"variables\": {\n    \"playlistId\": \"{{ _.demo_playlist_id }}\",\n    \"musicaId\": \"m2\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461248000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_gql_p_delete",
+      "parentId": "fld_graphql",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.graphql_url }}/graphql",
+      "name": "CRUD Playlist - Remover",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\n  \"query\": \"mutation($id: ID!) { removerPlaylist(id: $id) }\",\n  \"variables\": {\n    \"id\": \"{{ _.demo_playlist_id }}\"\n  }\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1795461247000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_grpc_health",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "0. HealthCheck",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/HealthCheck",
+      "body": {
+        "text": "{}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461246000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_q1",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "1. [Slide 6] ListarUsuarios",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/ListarUsuarios",
+      "body": {
+        "text": "{}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461245000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_q2",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "2. [Slide 6] ListarMusicas",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/ListarMusicas",
+      "body": {
+        "text": "{}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461244000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_q3",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "3. [Slide 6] ListarPlaylistsPorUsuario",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/ListarPlaylistsPorUsuario",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.usuario_id }}\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461243000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_q4",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "4. [Slide 6] ListarMusicasPorPlaylist",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/ListarMusicasPorPlaylist",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.playlist_id }}\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461242000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_q5",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "5. [Slide 6] ListarPlaylistsPorMusica",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/ListarPlaylistsPorMusica",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.musica_id }}\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461241000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_u_create",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Usuário - CriarUsuario",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/CriarUsuario",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.demo_usuario_id }}\",\n  \"nome\": \"Aluno Demo\",\n  \"idade\": 22\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461240000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_u_get",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Usuário - ObterUsuario",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/ObterUsuario",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.demo_usuario_id }}\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461239000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_u_update",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Usuário - AtualizarUsuario",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/AtualizarUsuario",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.demo_usuario_id }}\",\n  \"nome\": \"Aluno Demo Editado\",\n  \"idade\": 23\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461238000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_u_delete",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Usuário - RemoverUsuario",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/RemoverUsuario",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.demo_usuario_id }}\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461237000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_m_create",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Música - CriarMusica",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/CriarMusica",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.demo_musica_id }}\",\n  \"nome\": \"Música Demo\",\n  \"artista\": \"Artista Demo\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461236000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_m_delete",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Música - RemoverMusica",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/RemoverMusica",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.demo_musica_id }}\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461235000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_p_create",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Playlist - CriarPlaylist",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/CriarPlaylist",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.demo_playlist_id }}\",\n  \"nome\": \"Playlist Demo\",\n  \"usuario_id\": \"{{ _.usuario_id }}\",\n  \"musica_ids\": [\n    \"m1\"\n  ]\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461234000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_p_add_song",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Playlist - AdicionarMusicaNaPlaylist",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/AdicionarMusicaNaPlaylist",
+      "body": {
+        "text": "{\n  \"playlist_id\": \"{{ _.demo_playlist_id }}\",\n  \"musica_id\": \"m2\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461233000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_p_rem_song",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Playlist - RemoverMusicaDaPlaylist",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/RemoverMusicaDaPlaylist",
+      "body": {
+        "text": "{\n  \"playlist_id\": \"{{ _.demo_playlist_id }}\",\n  \"musica_id\": \"m2\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461232000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    },
+    {
+      "_id": "req_grpc_p_delete",
+      "parentId": "fld_grpc",
+      "modified": 1795461300000,
+      "created": 1795461300000,
+      "url": "{{ _.grpc_url }}",
+      "name": "CRUD Playlist - RemoverPlaylist",
+      "description": "",
+      "protoFileId": "pf_streaming",
+      "protoMethodName": "/streaming.StreamingService/RemoverPlaylist",
+      "body": {
+        "text": "{\n  \"id\": \"{{ _.demo_playlist_id }}\"\n}"
+      },
+      "metadata": [],
+      "metaSortKey": -1795461231000,
+      "isPrivate": false,
+      "_type": "grpc_request"
+    }
+  ]
+}
