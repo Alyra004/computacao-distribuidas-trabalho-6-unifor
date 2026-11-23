@@ -1,0 +1,10 @@
+{
+  "java.diagnostic.filter": [
+    "**/target/generated-sources/**"
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/python"
+  ]
+}

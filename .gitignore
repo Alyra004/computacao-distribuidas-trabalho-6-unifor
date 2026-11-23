@@ -1,0 +1,38 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+python/grpc_api/*_pb2.py
+python/grpc_api/*_pb2_grpc.py
+
+# Java / Maven
+target/
+.mvn/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+# IDEs & Editors
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.iml
+*.swp
+
+# OS & Temp
+.DS_Store
+Thumbs.db
+powershell.cmd
+.env
+
+# Benchmark outputs (keep folder structure via .gitkeep)
+results/*
+!results/.gitkeep
+graficos/*
+!graficos/.gitkeep

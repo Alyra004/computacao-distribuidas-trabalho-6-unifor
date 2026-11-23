@@ -1,0 +1,257 @@
+openapi: 3.0.3
+info:
+  title: Serviço de Streaming de Músicas - API REST
+  version: 1.0.0
+  description: Contrato OpenAPI compartilhado pelas implementações REST em Python e Java (Trabalho 6 - UNIFOR).
+
+paths:
+  /health:
+    get:
+      summary: Verifica saúde do serviço
+      responses:
+        "200":
+          description: Serviço operacional
+
+  /usuarios:
+    get:
+      summary: Listar os dados de todos os usuários do serviço
+      responses:
+        "200":
+          description: Lista de usuários
+    post:
+      summary: Criar novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioInput"
+      responses:
+        "201":
+          description: Usuário criado
+
+  /usuarios/{id}:
+    get:
+      summary: Consultar usuário por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Usuário encontrado }
+        "404": { description: Usuário não encontrado }
+    put:
+      summary: Atualizar usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsuarioInput"
+      responses:
+        "200": { description: Usuário atualizado }
+    delete:
+      summary: Remover usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: Usuário removido }
+
+  /usuarios/{id}/playlists:
+    get:
+      summary: Listar os dados de todas as playlists de um determinado usuário
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Playlists do usuário }
+
+  /musicas:
+    get:
+      summary: Listar os dados de todas as músicas mantidas pelo serviço
+      responses:
+        "200": { description: Lista de músicas }
+    post:
+      summary: Criar nova música
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MusicaInput"
+      responses:
+        "201": { description: Música criada }
+
+  /musicas/{id}:
+    get:
+      summary: Consultar música por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Música encontrada }
+    put:
+      summary: Atualizar música
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MusicaInput"
+      responses:
+        "200": { description: Música atualizada }
+    delete:
+      summary: Remover música
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: Música removida }
+
+  /musicas/{id}/playlists:
+    get:
+      summary: Listar os dados de todas as playlists que contêm uma determinada música
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Playlists contendo a música }
+
+  /playlists:
+    get:
+      summary: Listar todas as playlists
+      responses:
+        "200": { description: Lista de playlists }
+    post:
+      summary: Criar nova playlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaylistInput"
+      responses:
+        "201": { description: Playlist criada }
+
+  /playlists/{id}:
+    get:
+      summary: Consultar playlist por ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Playlist encontrada }
+    put:
+      summary: Atualizar playlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaylistInput"
+      responses:
+        "200": { description: Playlist atualizada }
+    delete:
+      summary: Remover playlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204": { description: Playlist removida }
+
+  /playlists/{id}/musicas:
+    get:
+      summary: Listar os dados de todas as músicas de uma determinada playlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Músicas da playlist }
+
+  /playlists/{id}/musicas/{musicaId}:
+    post:
+      summary: Adicionar música à playlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: musicaId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Playlist atualizada }
+    delete:
+      summary: Remover música da playlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: musicaId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { description: Playlist atualizada }
+
+components:
+  schemas:
+    UsuarioInput:
+      type: object
+      required: [nome, idade]
+      properties:
+        id: { type: string }
+        nome: { type: string }
+        idade: { type: integer }
+    MusicaInput:
+      type: object
+      required: [nome, artista]
+      properties:
+        id: { type: string }
+        nome: { type: string }
+        artista: { type: string }
+    PlaylistInput:
+      type: object
+      required: [nome, usuarioId]
+      properties:
+        id: { type: string }
+        nome: { type: string }
+        usuarioId: { type: string }
+        musicaIds:
+          type: array
+          items: { type: string }

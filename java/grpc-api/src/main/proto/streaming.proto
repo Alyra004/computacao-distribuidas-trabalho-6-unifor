@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package streaming;
+
+option java_multiple_files = true;
+option java_package = "br.unifor.distribuidos.grpc.proto";
+option java_outer_classname = "StreamingProto";
+
+message Usuario {
+  string id = 1;
+  string nome = 2;
+  int32 idade = 3;
+}
+
+message Musica {
+  string id = 1;
+  string nome = 2;
+  string artista = 3;
+}
+
+message Playlist {
+  string id = 1;
+  string nome = 2;
+  string usuario_id = 3;
+  repeated string musica_ids = 4;
+}
+
+message Empty {}
+
+message IdRequest {
+  string id = 1;
+}
+
+message StatusResponse {
+  bool sucesso = 1;
+  string mensagem = 2;
+}
+
+message CriarUsuarioRequest {
+  string nome = 1;
+  int32 idade = 2;
+  string id = 3;
+}
+
+message AtualizarUsuarioRequest {
+  string id = 1;
+  string nome = 2;
+  int32 idade = 3;
+}
+
+message UsuarioListResponse {
+  repeated Usuario usuarios = 1;
+}
+
+message CriarMusicaRequest {
+  string nome = 1;
+  string artista = 2;
+  string id = 3;
+}
+
+message AtualizarMusicaRequest {
+  string id = 1;
+  string nome = 2;
+  string artista = 3;
+}
+
+message MusicaListResponse {
+  repeated Musica musicas = 1;
+}
+
+message CriarPlaylistRequest {
+  string nome = 1;
+  string usuario_id = 2;
+  repeated string musica_ids = 3;
+  string id = 4;
+}
+
+message AtualizarPlaylistRequest {
+  string id = 1;
+  string nome = 2;
+  string usuario_id = 3;
+  repeated string musica_ids = 4;
+}
+
+message PlaylistMusicaRequest {
+  string playlist_id = 1;
+  string musica_id = 2;
+}
+
+message PlaylistListResponse {
+  repeated Playlist playlists = 1;
+}
+
+service StreamingService {
+  rpc HealthCheck(Empty) returns (StatusResponse);
+  rpc ResetSeed(Empty) returns (StatusResponse);
+
+  rpc ListarUsuarios(Empty) returns (UsuarioListResponse);
+  rpc ObterUsuario(IdRequest) returns (Usuario);
+  rpc CriarUsuario(CriarUsuarioRequest) returns (Usuario);
+  rpc AtualizarUsuario(AtualizarUsuarioRequest) returns (Usuario);
+  rpc RemoverUsuario(IdRequest) returns (StatusResponse);
+
+  rpc ListarMusicas(Empty) returns (MusicaListResponse);
+  rpc ObterMusica(IdRequest) returns (Musica);
+  rpc CriarMusica(CriarMusicaRequest) returns (Musica);
+  rpc AtualizarMusica(AtualizarMusicaRequest) returns (Musica);
+  rpc RemoverMusica(IdRequest) returns (StatusResponse);
+
+  rpc ListarPlaylists(Empty) returns (PlaylistListResponse);
+  rpc ObterPlaylist(IdRequest) returns (Playlist);
+  rpc CriarPlaylist(CriarPlaylistRequest) returns (Playlist);
+  rpc AtualizarPlaylist(AtualizarPlaylistRequest) returns (Playlist);
+  rpc RemoverPlaylist(IdRequest) returns (StatusResponse);
+  rpc AdicionarMusicaNaPlaylist(PlaylistMusicaRequest) returns (Playlist);
+  rpc RemoverMusicaDaPlaylist(PlaylistMusicaRequest) returns (Playlist);
+
+  rpc ListarPlaylistsPorUsuario(IdRequest) returns (PlaylistListResponse);
+  rpc ListarMusicasPorPlaylist(IdRequest) returns (MusicaListResponse);
+  rpc ListarPlaylistsPorMusica(IdRequest) returns (PlaylistListResponse);
+}

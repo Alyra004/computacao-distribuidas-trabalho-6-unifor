@@ -1,0 +1,155 @@
+services:
+  # ============================================================================
+  # Entregas em Python (REST, SOAP, GraphQL, gRPC)
+  # ============================================================================
+  python-rest:
+    build:
+      context: .
+      dockerfile: python/Dockerfile
+    container_name: t6-python-rest
+    command: ["uvicorn", "rest_api.main:app", "--host", "0.0.0.0", "--port", "8001"]
+    environment:
+      - SEED_DATA_PATH=${SEED_DATA_PATH:-/app/contracts/seed/initial_data.json}
+      - PORT=8001
+    ports:
+      - "8001:8001"
+    networks:
+      - streaming-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  python-soap:
+    build:
+      context: .
+      dockerfile: python/Dockerfile
+    container_name: t6-python-soap
+    command: ["uvicorn", "soap_api.main:app", "--host", "0.0.0.0", "--port", "8002"]
+    environment:
+      - SEED_DATA_PATH=${SEED_DATA_PATH:-/app/contracts/seed/initial_data.json}
+      - PORT=8002
+    ports:
+      - "8002:8002"
+    networks:
+      - streaming-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  python-graphql:
+    build:
+      context: .
+      dockerfile: python/Dockerfile
+    container_name: t6-python-graphql
+    command: ["uvicorn", "graphql_api.main:app", "--host", "0.0.0.0", "--port", "8003"]
+    environment:
+      - SEED_DATA_PATH=${SEED_DATA_PATH:-/app/contracts/seed/initial_data.json}
+      - PORT=8003
+    ports:
+      - "8003:8003"
+    networks:
+      - streaming-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  python-grpc:
+    build:
+      context: .
+      dockerfile: python/Dockerfile
+    container_name: t6-python-grpc
+    command: ["python", "-m", "grpc_api.main"]
+    environment:
+      - SEED_DATA_PATH=${SEED_DATA_PATH:-/app/contracts/seed/initial_data.json}
+      - PORT=50051
+    ports:
+      - "50051:50051"
+    networks:
+      - streaming-net
+
+  # ============================================================================
+  # Entregas em Java (REST, SOAP, GraphQL, gRPC)
+  # ============================================================================
+  java-rest:
+    build:
+      context: .
+      dockerfile: java/Dockerfile
+      args:
+        MODULE: rest-api
+    container_name: t6-java-rest
+    environment:
+      - SEED_DATA_PATH=${SEED_DATA_PATH:-/app/contracts/seed/initial_data.json}
+      - SERVER_PORT=8081
+    ports:
+      - "8081:8081"
+    networks:
+      - streaming-net
+
+  java-soap:
+    build:
+      context: .
+      dockerfile: java/Dockerfile
+      args:
+        MODULE: soap-api
+    container_name: t6-java-soap
+    environment:
+      - SEED_DATA_PATH=${SEED_DATA_PATH:-/app/contracts/seed/initial_data.json}
+      - SERVER_PORT=8082
+    ports:
+      - "8082:8082"
+    networks:
+      - streaming-net
+
+  java-graphql:
+    build:
+      context: .
+      dockerfile: java/Dockerfile
+      args:
+        MODULE: graphql-api
+    container_name: t6-java-graphql
+    environment:
+      - SEED_DATA_PATH=${SEED_DATA_PATH:-/app/contracts/seed/initial_data.json}
+      - SERVER_PORT=8083
+    ports:
+      - "8083:8083"
+    networks:
+      - streaming-net
+
+  java-grpc:
+    build:
+      context: .
+      dockerfile: java/Dockerfile
+      args:
+        MODULE: grpc-api
+    container_name: t6-java-grpc
+    environment:
+      - SEED_DATA_PATH=${SEED_DATA_PATH:-/app/contracts/seed/initial_data.json}
+      - GRPC_PORT=50052
+    ports:
+      - "50052:50052"
+    networks:
+      - streaming-net
+
+  locust:
+    build:
+      context: .
+      dockerfile: python/Dockerfile
+    container_name: t6-locust
+    profiles: ["loadtest"]
+    working_dir: /app
+    volumes:
+      - ./load_tests:/app/load_tests:ro
+      - ./results:/app/results
+      - ./contracts:/app/contracts:ro
+    networks:
+      - streaming-net
+
+networks:
+  streaming-net:
+    driver: bridge

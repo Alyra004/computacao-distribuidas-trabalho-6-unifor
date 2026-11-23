@@ -1,0 +1,325 @@
+{
+  "usuarios": [
+    {
+      "id": "u1",
+      "nome": "Amanda Andrade #1",
+      "idade": 21
+    },
+    {
+      "id": "u2",
+      "nome": "João Quirino #2",
+      "idade": 24
+    },
+    {
+      "id": "u3",
+      "nome": "Raquel Mendes #3",
+      "idade": 27
+    },
+    {
+      "id": "u4",
+      "nome": "Lucas Costa #4",
+      "idade": 30
+    },
+    {
+      "id": "u5",
+      "nome": "Mariana Rocha #5",
+      "idade": 33
+    },
+    {
+      "id": "u6",
+      "nome": "Pedro Alves #6",
+      "idade": 36
+    },
+    {
+      "id": "u7",
+      "nome": "Camila Nunes #7",
+      "idade": 39
+    },
+    {
+      "id": "u8",
+      "nome": "Gabriel Souza #8",
+      "idade": 42
+    },
+    {
+      "id": "u9",
+      "nome": "Beatriz Barbosa #9",
+      "idade": 20
+    },
+    {
+      "id": "u10",
+      "nome": "Rafael Cardoso #10",
+      "idade": 23
+    }
+  ],
+  "musicas": [
+    {
+      "id": "m1",
+      "nome": "Noite de Verão (1)",
+      "artista": "Elis & Tom"
+    },
+    {
+      "id": "m2",
+      "nome": "Amanhecer de Verão (2)",
+      "artista": "Legião Urbana"
+    },
+    {
+      "id": "m3",
+      "nome": "Saudade de Verão (3)",
+      "artista": "Alceu Valença"
+    },
+    {
+      "id": "m4",
+      "nome": "Horizonte de Verão (4)",
+      "artista": "Chico Buarque"
+    },
+    {
+      "id": "m5",
+      "nome": "Estrela de Verão (5)",
+      "artista": "Queen"
+    },
+    {
+      "id": "m6",
+      "nome": "Maré de Verão (6)",
+      "artista": "Coldplay"
+    },
+    {
+      "id": "m7",
+      "nome": "Vento de Verão (7)",
+      "artista": "Muse"
+    },
+    {
+      "id": "m8",
+      "nome": "Caminho de Verão (8)",
+      "artista": "Tom Jobim"
+    },
+    {
+      "id": "m9",
+      "nome": "Ritmo de Verão (9)",
+      "artista": "Luiz Gonzaga"
+    },
+    {
+      "id": "m10",
+      "nome": "Eco de Verão (10)",
+      "artista": "Cazuza"
+    },
+    {
+      "id": "m11",
+      "nome": "Brisa de Verão (11)",
+      "artista": "The Weeknd"
+    },
+    {
+      "id": "m12",
+      "nome": "Memória de Verão (12)",
+      "artista": "Djavan"
+    },
+    {
+      "id": "m13",
+      "nome": "Luz de Verão (13)",
+      "artista": "Marisa Monte"
+    },
+    {
+      "id": "m14",
+      "nome": "Sinfonia de Verão (14)",
+      "artista": "Caetano Veloso"
+    },
+    {
+      "id": "m15",
+      "nome": "Pulso de Verão (15)",
+      "artista": "Gilberto Gil"
+    },
+    {
+      "id": "m16",
+      "nome": "Noite do Norte (16)",
+      "artista": "Paralamas"
+    },
+    {
+      "id": "m17",
+      "nome": "Amanhecer do Norte (17)",
+      "artista": "Elis & Tom"
+    },
+    {
+      "id": "m18",
+      "nome": "Saudade do Norte (18)",
+      "artista": "Legião Urbana"
+    },
+    {
+      "id": "m19",
+      "nome": "Horizonte do Norte (19)",
+      "artista": "Alceu Valença"
+    },
+    {
+      "id": "m20",
+      "nome": "Estrela do Norte (20)",
+      "artista": "Chico Buarque"
+    }
+  ],
+  "playlists": [
+    {
+      "id": "p1",
+      "nome": "Clássicos #1",
+      "usuarioId": "u1",
+      "musicaIds": [
+        "m4",
+        "m1",
+        "m9",
+        "m8",
+        "m17"
+      ]
+    },
+    {
+      "id": "p2",
+      "nome": "Foco & Estudo #2",
+      "usuarioId": "u2",
+      "musicaIds": [
+        "m4",
+        "m18",
+        "m3"
+      ]
+    },
+    {
+      "id": "p3",
+      "nome": "Viagem #3",
+      "usuarioId": "u3",
+      "musicaIds": [
+        "m14",
+        "m2",
+        "m1",
+        "m3",
+        "m7"
+      ]
+    },
+    {
+      "id": "p4",
+      "nome": "Treino #4",
+      "usuarioId": "u4",
+      "musicaIds": [
+        "m17",
+        "m1",
+        "m18"
+      ]
+    },
+    {
+      "id": "p5",
+      "nome": "Acústico #5",
+      "usuarioId": "u5",
+      "musicaIds": [
+        "m18",
+        "m14",
+        "m8"
+      ]
+    },
+    {
+      "id": "p6",
+      "nome": "MPB #6",
+      "usuarioId": "u6",
+      "musicaIds": [
+        "m19",
+        "m9",
+        "m1",
+        "m6"
+      ]
+    },
+    {
+      "id": "p7",
+      "nome": "Rock #7",
+      "usuarioId": "u7",
+      "musicaIds": [
+        "m14",
+        "m11",
+        "m9",
+        "m5",
+        "m7"
+      ]
+    },
+    {
+      "id": "p8",
+      "nome": "Pop Hits #8",
+      "usuarioId": "u8",
+      "musicaIds": [
+        "m4",
+        "m3",
+        "m13",
+        "m20"
+      ]
+    },
+    {
+      "id": "p9",
+      "nome": "Favoritas #9",
+      "usuarioId": "u9",
+      "musicaIds": [
+        "m12",
+        "m9",
+        "m2",
+        "m15"
+      ]
+    },
+    {
+      "id": "p10",
+      "nome": "Relax #10",
+      "usuarioId": "u10",
+      "musicaIds": [
+        "m4",
+        "m13",
+        "m3",
+        "m10",
+        "m12"
+      ]
+    },
+    {
+      "id": "p11",
+      "nome": "Nordeste #11",
+      "usuarioId": "u1",
+      "musicaIds": [
+        "m7",
+        "m3",
+        "m2",
+        "m8",
+        "m10"
+      ]
+    },
+    {
+      "id": "p12",
+      "nome": "Sextou #12",
+      "usuarioId": "u2",
+      "musicaIds": [
+        "m8",
+        "m4",
+        "m13"
+      ]
+    },
+    {
+      "id": "p13",
+      "nome": "Clássicos #13",
+      "usuarioId": "u3",
+      "musicaIds": [
+        "m15",
+        "m12",
+        "m6",
+        "m19"
+      ]
+    },
+    {
+      "id": "p14",
+      "nome": "Foco & Estudo #14",
+      "usuarioId": "u4",
+      "musicaIds": [
+        "m7",
+        "m9",
+        "m3",
+        "m6"
+      ]
+    },
+    {
+      "id": "p15",
+      "nome": "Viagem #15",
+      "usuarioId": "u5",
+      "musicaIds": [
+        "m8",
+        "m6",
+        "m15",
+        "m13",
+        "m9"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "usuarios": [
+    { "id": "u1", "nome": "Amanda Lira", "idade": 21 },
+    { "id": "u2", "nome": "João Igor", "idade": 22 },
+    { "id": "u3", "nome": "Raquel Quirino", "idade": 94 },
+    { "id": "u4", "nome": "Lucas Mendes", "idade": 25 },
+    { "id": "u5", "nome": "Mariana Costa", "idade": 21 },
+    { "id": "u6", "nome": "Pedro Henrique", "idade": 27 },
+    { "id": "u7", "nome": "Camila Rocha", "idade": 24 },
+    { "id": "u8", "nome": "Gabriel Alves", "idade": 26 },
+    { "id": "u9", "nome": "Beatriz Nunes", "idade": 20 },
+    { "id": "u10", "nome": "Rafael Souza", "idade": 28 }
+  ],
+  "musicas": [
+    { "id": "m1", "nome": "Evidências", "artista": "Chitãozinho & Xororó" },
+    { "id": "m2", "nome": "Águas de Março", "artista": "Elis Regina & Tom Jobim" },
+    { "id": "m3", "nome": "Tempo Perdido", "artista": "Legião Urbana" },
+    { "id": "m4", "nome": "Bohemian Rhapsody", "artista": "Queen" },
+    { "id": "m5", "nome": "Construção", "artista": "Chico Buarque" },
+    { "id": "m6", "nome": "Billie Jean", "artista": "Michael Jackson" },
+    { "id": "m7", "nome": "Garota de Ipanema", "artista": "Tom Jobim" },
+    { "id": "m8", "nome": "Smells Like Teen Spirit", "artista": "Nirvana" },
+    { "id": "m9", "nome": "Anunciação", "artista": "Alceu Valença" },
+    { "id": "m10", "nome": "Chega de Saudade", "artista": "João Gilberto" },
+    { "id": "m11", "nome": "Hotel California", "artista": "Eagles" },
+    { "id": "m12", "nome": "O Tempo Não Para", "artista": "Cazuza" },
+    { "id": "m13", "nome": "Blinding Lights", "artista": "The Weeknd" },
+    { "id": "m14", "nome": "Aquarela", "artista": "Toquinho" },
+    { "id": "m15", "nome": "Pais e Filhos", "artista": "Legião Urbana" },
+    { "id": "m16", "nome": "Back in Black", "artista": "AC/DC" },
+    { "id": "m17", "nome": "Asa Branca", "artista": "Luiz Gonzaga" },
+    { "id": "m18", "nome": "Viva La Vida", "artista": "Coldplay" },
+    { "id": "m19", "nome": "Trem das Onze", "artista": "Adoniran Barbosa" },
+    { "id": "m20", "nome": "Starlight", "artista": "Muse" }
+  ],
+  "playlists": [
+    { "id": "p1", "nome": "Clássicos Brasileiros", "usuarioId": "u1", "musicaIds": ["m1", "m2", "m5", "m7", "m10"] },
+    { "id": "p2", "nome": "Rock para Estudar", "usuarioId": "u1", "musicaIds": ["m3", "m4", "m8", "m11", "m16"] },
+    { "id": "p3", "nome": "Nordeste Raiz", "usuarioId": "u2", "musicaIds": ["m9", "m17", "m1"] },
+    { "id": "p4", "nome": "Favoritas de Sexta", "usuarioId": "u2", "musicaIds": ["m6", "m13", "m18", "m20"] },
+    { "id": "p5", "nome": "MPB Acústica", "usuarioId": "u3", "musicaIds": ["m2", "m5", "m7", "m14", "m19"] },
+    { "id": "p6", "nome": "Road Trip", "usuarioId": "u3", "musicaIds": ["m4", "m11", "m12", "m16", "m18"] },
+    { "id": "p7", "nome": "Treino Pesado", "usuarioId": "u4", "musicaIds": ["m8", "m13", "m16", "m20"] },
+    { "id": "p8", "nome": "Bossa & Café", "usuarioId": "u5", "musicaIds": ["m2", "m7", "m10", "m14"] },
+    { "id": "p9", "nome": "Anos 80 BR", "usuarioId": "u6", "musicaIds": ["m3", "m12", "m15"] },
+    { "id": "p10", "nome": "Pop Hits", "usuarioId": "u7", "musicaIds": ["m6", "m13", "m18"] },
+    { "id": "p11", "nome": "Samba & Choro", "usuarioId": "u8", "musicaIds": ["m19", "m5", "m10"] },
+    { "id": "p12", "nome": "Indie & Alternativo", "usuarioId": "u9", "musicaIds": ["m8", "m18", "m20"] },
+    { "id": "p13", "nome": "Top Karaokê", "usuarioId": "u10", "musicaIds": ["m1", "m4", "m9", "m15"] },
+    { "id": "p14", "nome": "Descobertas", "usuarioId": "u4", "musicaIds": ["m1", "m14", "m17"] },
+    { "id": "p15", "nome": "Relax Noite", "usuarioId": "u5", "musicaIds": ["m7", "m10", "m19"] }
+  ]
+}

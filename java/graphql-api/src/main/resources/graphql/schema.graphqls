@@ -1,0 +1,62 @@
+type Usuario {
+  id: ID!
+  nome: String!
+  idade: Int!
+  playlists: [Playlist!]!
+}
+
+type Musica {
+  id: ID!
+  nome: String!
+  artista: String!
+  playlists: [Playlist!]!
+}
+
+type Playlist {
+  id: ID!
+  nome: String!
+  usuarioId: ID!
+  usuario: Usuario
+  musicaIds: [ID!]!
+  musicas: [Musica!]!
+}
+
+type StatusResponse {
+  sucesso: Boolean!
+  mensagem: String!
+}
+
+type Query {
+  health: StatusResponse!
+
+  usuarios: [Usuario!]!
+  usuario(id: ID!): Usuario
+
+  musicas: [Musica!]!
+  musica(id: ID!): Musica
+
+  playlists: [Playlist!]!
+  playlist(id: ID!): Playlist
+
+  playlistsPorUsuario(usuarioId: ID!): [Playlist!]!
+  musicasPorPlaylist(playlistId: ID!): [Musica!]!
+  playlistsPorMusica(musicaId: ID!): [Playlist!]!
+}
+
+type Mutation {
+  resetSeed: StatusResponse!
+
+  criarUsuario(nome: String!, idade: Int!, id: ID): Usuario!
+  atualizarUsuario(id: ID!, nome: String!, idade: Int!): Usuario!
+  removerUsuario(id: ID!): Boolean!
+
+  criarMusica(nome: String!, artista: String!, id: ID): Musica!
+  atualizarMusica(id: ID!, nome: String!, artista: String!): Musica!
+  removerMusica(id: ID!): Boolean!
+
+  criarPlaylist(nome: String!, usuarioId: ID!, musicaIds: [ID!], id: ID): Playlist!
+  atualizarPlaylist(id: ID!, nome: String!, usuarioId: ID, musicaIds: [ID!]): Playlist!
+  removerPlaylist(id: ID!): Boolean!
+  adicionarMusicaNaPlaylist(playlistId: ID!, musicaId: ID!): Playlist!
+  removerMusicaDaPlaylist(playlistId: ID!, musicaId: ID!): Playlist!
+}
