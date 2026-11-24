@@ -34,5 +34,3 @@ powershell.cmd
 # Benchmark outputs (keep folder structure via .gitkeep)
 results/*
 !results/.gitkeep
-graficos/*
-!graficos/.gitkeep
