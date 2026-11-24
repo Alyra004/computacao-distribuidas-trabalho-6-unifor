@@ -9,6 +9,7 @@ from typing import Callable
 
 import uvicorn
 from fastapi import FastAPI, Request, Response
+from fastapi.responses import HTMLResponse
 
 from common.models import Musica, Playlist, Usuario
 from common.service import (
@@ -25,11 +26,11 @@ app = FastAPI(title="Streaming de Músicas - Python SOAP", version="1.0.0")
 service: StreamingService = get_streaming_service()
 
 
-def _resolve_wsdl_path() -> Path:
-    env_path = os.getenv("WSDL_PATH")
+def _resolve_contract_file(env_var: str, filename: str) -> Path:
+    env_path = os.getenv(env_var)
     if env_path and Path(env_path).is_file():
         return Path(env_path)
-    return Path(__file__).resolve().parents[2] / "contracts" / "soap" / "streaming.wsdl"
+    return Path(__file__).resolve().parents[2] / "contracts" / "soap" / filename
 
 
 def _local_name(tag: str) -> str:
@@ -285,6 +286,15 @@ SOAP_HANDLERS: dict[str, Callable[[ET.Element], ET.Element]] = {
 }
 
 
+@app.get("/", response_class=HTMLResponse)
+def playground() -> Response:
+    playground_path = _resolve_contract_file("SOAP_PLAYGROUND_PATH", "playground.html")
+    if not playground_path.is_file():
+        return Response(content="SOAP playground não encontrado.", media_type="text/plain", status_code=404)
+    html = playground_path.read_text(encoding="utf-8").replace("{{SERVICE_LABEL}}", "Python SOAP (FastAPI)")
+    return HTMLResponse(content=html)
+
+
 @app.get("/health")
 def health() -> dict[str, object]:
     return service.health_check()
@@ -293,7 +303,7 @@ def health() -> dict[str, object]:
 @app.get("/soap")
 def get_wsdl(request: Request) -> Response:
     if "wsdl" in request.query_params:
-        wsdl_path = _resolve_wsdl_path()
+        wsdl_path = _resolve_contract_file("WSDL_PATH", "streaming.wsdl")
         if wsdl_path.is_file():
             return Response(content=wsdl_path.read_text(encoding="utf-8"), media_type="text/xml")
     return Response(content="Use POST /soap ou GET /soap?wsdl", media_type="text/plain")

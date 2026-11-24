@@ -184,8 +184,8 @@ docker compose up -d --force-recreate
    - Alterne o ambiente entre **`Python (8001-8003 / 50051)`** e **`Java (8081-8083 / 50052)`** para disparar todas as consultas obrigatórias e operações CRUD nas pastas **`1. REST`**, **`2. SOAP`**, **`3. GraphQL`** e **`4. gRPC`**.
 2. **Via Interfaces Interativas no Navegador:**
    - **REST (Swagger UI Python):** `http://localhost:8001/docs`
+   - **SOAP (Web Playground + WSDL):** `http://localhost:8002/` e `http://localhost:8002/soap?wsdl` (Python) | `http://localhost:8082/` e `http://localhost:8082/soap?wsdl` (Java)
    - **GraphQL (GraphiQL):** `http://localhost:8003/graphql` (Python) e `http://localhost:8083/graphiql` (Java)
-   - **SOAP (Contrato WSDL):** `http://localhost:8002/soap?wsdl` (Python) e `http://localhost:8082/soap?wsdl` (Java)
 3. **Via Script de Demonstração no Terminal:**
    ```powershell
    .\.venv\Scripts\Activate.ps1

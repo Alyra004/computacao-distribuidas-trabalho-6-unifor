@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOAP Playground – {{SERVICE_LABEL}}</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --ok: #22c55e;
+      --err: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 { margin: 0; font-size: 1.35rem; }
+    .badge {
+      display: inline-block;
+      background: #0284c7;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .links a {
+      color: var(--accent);
+      text-decoration: none;
+      margin-left: 14px;
+      font-size: 0.9rem;
+    }
+    .links a:hover { text-decoration: underline; }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+      background: var(--panel);
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    select, button {
+      font-size: 0.92rem;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+    }
+    select { flex: 1 1 320px; }
+    button {
+      cursor: pointer;
+      background: var(--accent);
+      color: #082f49;
+      font-weight: 600;
+      border: none;
+    }
+    button:hover { background: var(--accent-hover); }
+    button.secondary {
+      background: #334155;
+      color: var(--text);
+    }
+    button.secondary:hover { background: #475569; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    textarea, pre {
+      width: 100%;
+      min-height: 430px;
+      margin: 0;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #020617;
+      color: #f8fafc;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      overflow: auto;
+    }
+    textarea { resize: vertical; }
+    .status-pill {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .status-ok { background: rgba(34, 197, 94, 0.18); color: var(--ok); }
+    .status-err { background: rgba(239, 68, 68, 0.18); color: var(--err); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Serviço de Streaming – SOAP Playground <span class="badge">{{SERVICE_LABEL}}</span></h1>
+      </div>
+      <div class="links">
+        <a href="/soap?wsdl" target="_blank">Abrir WSDL (/soap?wsdl)</a>
+        <a href="/health" target="_blank">Health (/health)</a>
+      </div>
+    </header>
+
+    <div class="toolbar">
+      <label for="opSelect">Operação:</label>
+      <select id="opSelect"></select>
+      <button id="sendBtn" type="button">Enviar Requisição SOAP (POST /soap)</button>
+      <button id="wsdlBtn" class="secondary" type="button">Visualizar WSDL</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <span>Envelope SOAP Request (XML)</span>
+          <span>Content-Type: text/xml; charset=utf-8</span>
+        </div>
+        <textarea id="requestXml" spellcheck="false"></textarea>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span>Resposta XML</span>
+          <span id="statusMeta">Aguardando envio...</span>
+        </div>
+        <pre id="responseXml"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const wrapSoap = (inner) =>
+      `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"\n` +
+      `                  xmlns:tns="http://unifor.br/distribuidos/streaming">\n` +
+      `  <soapenv:Body>\n    ${inner}\n  </soapenv:Body>\n` +
+      `</soapenv:Envelope>`;
+
+    const OPERATIONS = [
+      { label: "1. [Slide 6] Listar todos os usuários", body: "<tns:ListarUsuariosRequest/>" },
+      { label: "2. [Slide 6] Listar todas as músicas", body: "<tns:ListarMusicasRequest/>" },
+      { label: "3. [Slide 6] Listar playlists do usuário (u1)", body: "<tns:ListarPlaylistsPorUsuarioRequest>\n      <tns:usuarioId>u1</tns:usuarioId>\n    </tns:ListarPlaylistsPorUsuarioRequest>" },
+      { label: "4. [Slide 6] Listar músicas da playlist (p1)", body: "<tns:ListarMusicasPorPlaylistRequest>\n      <tns:playlistId>p1</tns:playlistId>\n    </tns:ListarMusicasPorPlaylistRequest>" },
+      { label: "5. [Slide 6] Listar playlists com a música (m1)", body: "<tns:ListarPlaylistsPorMusicaRequest>\n      <tns:musicaId>m1</tns:musicaId>\n    </tns:ListarPlaylistsPorMusicaRequest>" },
+      { label: "CRUD Usuário – Criar (u99)", body: "<tns:CriarUsuarioRequest>\n      <tns:id>u99</tns:id>\n      <tns:nome>Aluno Demo</tns:nome>\n      <tns:idade>22</tns:idade>\n    </tns:CriarUsuarioRequest>" },
+      { label: "CRUD Usuário – Obter (u99)", body: "<tns:ObterUsuarioRequest>\n      <tns:id>u99</tns:id>\n    </tns:ObterUsuarioRequest>" },
+      { label: "CRUD Usuário – Atualizar (u99)", body: "<tns:AtualizarUsuarioRequest>\n      <tns:id>u99</tns:id>\n      <tns:nome>Aluno Demo Editado</tns:nome>\n      <tns:idade>23</tns:idade>\n    </tns:AtualizarUsuarioRequest>" },
+      { label: "CRUD Usuário – Remover (u99)", body: "<tns:RemoverUsuarioRequest>\n      <tns:id>u99</tns:id>\n    </tns:RemoverUsuarioRequest>" },
+      { label: "CRUD Música – Criar (m99)", body: "<tns:CriarMusicaRequest>\n      <tns:id>m99</tns:id>\n      <tns:nome>Música Demo</tns:nome>\n      <tns:artista>Artista Demo</tns:artista>\n    </tns:CriarMusicaRequest>" },
+      { label: "CRUD Música – Remover (m99)", body: "<tns:RemoverMusicaRequest>\n      <tns:id>m99</tns:id>\n    </tns:RemoverMusicaRequest>" },
+      { label: "CRUD Playlist – Criar (p99)", body: "<tns:CriarPlaylistRequest>\n      <tns:id>p99</tns:id>\n      <tns:nome>Playlist Demo</tns:nome>\n      <tns:usuarioId>u1</tns:usuarioId>\n      <tns:musicaIds>m1</tns:musicaIds>\n    </tns:CriarPlaylistRequest>" },
+      { label: "CRUD Playlist – Adicionar Música (p99 + m2)", body: "<tns:AdicionarMusicaNaPlaylistRequest>\n      <tns:playlistId>p99</tns:playlistId>\n      <tns:musicaId>m2</tns:musicaId>\n    </tns:AdicionarMusicaNaPlaylistRequest>" },
+      { label: "CRUD Playlist – Remover Música (p99 - m2)", body: "<tns:RemoverMusicaDaPlaylistRequest>\n      <tns:playlistId>p99</tns:playlistId>\n      <tns:musicaId>m2</tns:musicaId>\n    </tns:RemoverMusicaDaPlaylistRequest>" },
+      { label: "CRUD Playlist – Remover (p99)", body: "<tns:RemoverPlaylistRequest>\n      <tns:id>p99</tns:id>\n    </tns:RemoverPlaylistRequest>" }
+    ];
+
+    const opSelect = document.getElementById("opSelect");
+    const requestXml = document.getElementById("requestXml");
+    const responseXml = document.getElementById("responseXml");
+    const statusMeta = document.getElementById("statusMeta");
+
+    OPERATIONS.forEach((op, idx) => {
+      const opt = document.createElement("option");
+      opt.value = String(idx);
+      opt.textContent = op.label;
+      opSelect.appendChild(opt);
+    });
+
+    function loadOperation(idx) {
+      requestXml.value = wrapSoap(OPERATIONS[idx].body);
+    }
+
+    function formatXml(xml) {
+      const cleaned = xml.replace(/>\s*</g, "><").trim();
+      const tokens = cleaned.replace(/(>)(<)(\/*)/g, "$1\n$2$3").split("\n");
+      let indent = 0;
+      return tokens.map((node) => {
+        if (node.match(/^<\/\w/)) indent = Math.max(0, indent - 1);
+        const pad = "  ".repeat(indent);
+        if (node.match(/^<\w[^>]*[^\/]>$/) && !node.startsWith("<?")) indent += 1;
+        return pad + node;
+      }).join("\n");
+    }
+
+    async function sendSoap() {
+      const start = performance.now();
+      statusMeta.textContent = "Enviando...";
+      try {
+        const res = await fetch("/soap", {
+          method: "POST",
+          headers: { "Content-Type": "text/xml; charset=utf-8" },
+          body: requestXml.value
+        });
+        const text = await res.text();
+        const elapsed = (performance.now() - start).toFixed(1);
+        const cls = res.ok ? "status-ok" : "status-err";
+        statusMeta.innerHTML = `<span class="status-pill ${cls}">HTTP ${res.status}</span> ${elapsed} ms`;
+        responseXml.textContent = formatXml(text);
+      } catch (err) {
+        statusMeta.innerHTML = `<span class="status-pill status-err">ERRO</span>`;
+        responseXml.textContent = String(err);
+      }
+    }
+
+    async function loadWsdl() {
+      const start = performance.now();
+      const res = await fetch("/soap?wsdl");
+      const text = await res.text();
+      const elapsed = (performance.now() - start).toFixed(1);
+      statusMeta.innerHTML = `<span class="status-pill status-ok">HTTP ${res.status}</span> WSDL (${elapsed} ms)`;
+      responseXml.textContent = text;
+    }
+
+    opSelect.addEventListener("change", (e) => loadOperation(Number(e.target.value)));
+    document.getElementById("sendBtn").addEventListener("click", sendSoap);
+    document.getElementById("wsdlBtn").addEventListener("click", loadWsdl);
+    loadOperation(0);
+  </script>
+</body>
+</html>

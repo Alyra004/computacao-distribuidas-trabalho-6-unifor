@@ -63,6 +63,20 @@ public class StreamingSoapController {
         );
     }
 
+    @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<String> playground() throws IOException {
+        Path resolved = resolveSoapContractFile("SOAP_PLAYGROUND_PATH", "playground.html");
+        if (resolved == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body("SOAP playground nao encontrado.");
+        }
+        String html = Files.readString(resolved).replace("{{SERVICE_LABEL}}", "Java SOAP (Spring Boot)");
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("text/html;charset=UTF-8"))
+                .body(html);
+    }
+
     @GetMapping("/health")
     public Map<String, Object> health() {
         return service.healthCheck();
@@ -71,7 +85,7 @@ public class StreamingSoapController {
     @GetMapping("/soap")
     public ResponseEntity<String> getWsdl(@RequestParam(required = false) String wsdl) throws IOException {
         if (wsdl != null) {
-            Path resolved = resolveWsdlPath();
+            Path resolved = resolveSoapContractFile("WSDL_PATH", "streaming.wsdl");
             if (resolved != null) {
                 return ResponseEntity.ok()
                         .contentType(MediaType.TEXT_XML)
@@ -291,14 +305,14 @@ public class StreamingSoapController {
         return sb.append("</tns:ListarPlaylistsPorMusicaResponse>").toString();
     }
 
-    private Path resolveWsdlPath() {
+    private Path resolveSoapContractFile(String envVar, String filename) {
         List<Path> candidates = new ArrayList<>();
-        String env = System.getenv("WSDL_PATH");
+        String env = System.getenv(envVar);
         if (env != null && !env.isBlank()) {
             candidates.add(Path.of(env));
         }
-        candidates.add(Path.of("contracts", "soap", "streaming.wsdl"));
-        candidates.add(Path.of("..", "contracts", "soap", "streaming.wsdl"));
+        candidates.add(Path.of("contracts", "soap", filename));
+        candidates.add(Path.of("..", "contracts", "soap", filename));
         return candidates.stream().filter(Files::isRegularFile).findFirst().orElse(null);
     }
 
